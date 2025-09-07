@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: flask run --host=0.0.0.0 --port=5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - weather-db:/app/instance
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      - DATABASE_URL=sqlite:///instance/weather.db
+      - REDIS_URL=redis://redis:6379/0
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - WEATHER_CITY=London
+      - SECRET_KEY=dev-key
+    depends_on:
+      - redis
+
+  worker:
+    build: .
+    command: python worker.py
+    volumes:
+      - .:/app
+      - weather-db:/app/instance
+    environment:
+      - DATABASE_URL=sqlite:///instance/weather.db
+      - REDIS_URL=redis://redis:6379/0
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+    depends_on:
+      - redis
+
+  scheduler:
+    build: .
+    command: python scheduler.py
+    volumes:
+      - .:/app
+      - weather-db:/app/instance
+    environment:
+      - DATABASE_URL=sqlite:///instance/weather.db
+      - REDIS_URL=redis://redis:6379/0
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - WEATHER_CITY=London
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+
+volumes:
+  weather-db:
+

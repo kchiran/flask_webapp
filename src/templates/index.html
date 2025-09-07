@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Weather Analytics</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h1 class="mb-4">Weather Analytics</h1>
+
+    <form method="POST" action="/fetch" class="mb-3 row g-2">
+      <div class="col-auto">
+        <input name="city" class="form-control" placeholder="City (e.g. London)">
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Fetch Now</button>
+      </div>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-info">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <table class="table table-sm table-striped">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>City</th>
+          <th>Temp (°C)</th>
+          <th>Feels</th>
+          <th>Humidity</th>
+          <th>Summary</th>
+          <th>Alerts</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in records %}
+        <tr>
+          <td>{{ r.fetched_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ r.city }}</td>
+          <td>{{ "%.1f"|format(r.temperature_c) }}</td>
+          <td>{% if r.feels_like_c %}{{ "%.1f"|format(r.feels_like_c) }}{% else %}-{% endif %}</td>
+          <td>{% if r.humidity %}{{ r.humidity }}%{% else %}-{% endif %}</td>
+          <td>{{ r.summary }}</td>
+          <td>
+            {% if r.alerts %}
+              <ul class="mb-0">
+              {% for a in r.alerts %}
+                <li>{{ a.type }}: {{ a.message }}</li>
+              {% endfor %}
+              </ul>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</body>
+</html>
