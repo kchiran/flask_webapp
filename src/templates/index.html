@@ -41,10 +41,10 @@
       <tbody>
       {% for r in records %}
         <tr>
-          <td>{{ r.fetched_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td>{{ r.datetime }}</td>
           <td>{{ r.city }}</td>
-          <td>{{ "%.1f"|format(r.temperature_c) }}</td>
-          <td>{% if r.feels_like_c %}{{ "%.1f"|format(r.feels_like_c) }}{% else %}-{% endif %}</td>
+          <td>{{ r.temperature }}</td>
+          <td>{% if r.feels_like_t %}{{ r.feels_like_t }}{% else %}-{% endif %}</td>
           <td>{% if r.humidity %}{{ r.humidity }}%{% else %}-{% endif %}</td>
           <td>{{ r.summary }}</td>
           <td>

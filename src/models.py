@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Weather.sqlite3'
 
 db = SQLAlchemy(app)
 
@@ -15,6 +16,7 @@ the temperature.
 
 
 class Weather(db.Model):
+    __tablename__ = 'weather_records'
     id = db.Column(db.Integer, primary_key=True)
     city = db.Column(db.String(128), nullable=False)
     datetime = db.Column(db.DateTime, primary_key=True, default=datetime.utcnow())
@@ -29,11 +31,11 @@ class Weather(db.Model):
         return {
             "id": self.id,
             "city": self.city,
-            "datetime": self.fetched_at.isoformat(),
-            "temperature": self.temperature_c,
+            "datetime": self.datetime,
+            "temperature": self.temperature,
             "raw": self.raw,
             "humidity": self.humidity,
-            "feels_like_t": self.feels_like_c,
+            "feels_like_t": self.feels_like_t,
             "summary": self.summary,
             "alerts": self.alerts
         }
